@@ -143,3 +143,13 @@ Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with webview 
     		appAuthWebView.performLoginRequest();
     	}
 ```
+
+
+### Working with tokens and refresh token
+
+To access the id token or the access token you can simply call the static method  **AppAuthWebView.getAuthState(Context context)** to get the authstate object (already saved in shared preferences) and then access what you want in this object.
+
+
+To Perform a refresh token request you can simply call the static method **AppAuthWebView.peroformRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data)** and if the request success the AuthState will be updated in the shared preferences.
+
+
