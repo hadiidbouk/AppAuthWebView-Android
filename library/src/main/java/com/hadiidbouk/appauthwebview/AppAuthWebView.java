@@ -31,6 +31,8 @@ import net.openid.appauth.TokenRequest;
 import net.openid.appauth.TokenResponse;
 import net.openid.appauth.internal.Logger;
 
+import org.json.JSONException;
+
 import java.util.Date;
 
 public class AppAuthWebView {
@@ -146,6 +148,28 @@ public class AppAuthWebView {
 		Uri uri = mAuthRequest.toUri();
 
 		mWebView.loadUrl(uri.toString());
+	}
+
+	public static void peroformRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data) {
+
+		AppAuthConfiguration.Builder appAuthConfigBuilder = new AppAuthConfiguration.Builder();
+		appAuthConfigBuilder.setConnectionBuilder(AppAuthConnectionBuilderForTesting.INSTANCE);
+		AppAuthConfiguration appAuthConfig = appAuthConfigBuilder.build();
+
+		AuthorizationService authService = new AuthorizationService(context, appAuthConfig);
+
+		ClientSecretPost clientSecretPost = new ClientSecretPost(data.getClientSecret());
+		final TokenRequest request = authState.createTokenRefreshRequest();
+
+		authService.performTokenRequest(request, clientSecretPost, new AuthorizationService.TokenResponseCallback() {
+			@Override public void onTokenRequestCompleted(@Nullable TokenResponse response, @Nullable AuthorizationException ex) {
+				if (ex != null) {
+					ex.printStackTrace();
+					return;
+				}
+				AppAuthWebView.updateAuthStateFromRefreshToken(context,response,ex);
+			}
+		});
 	}
 
 	@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -405,6 +429,27 @@ public class AppAuthWebView {
 			PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthRequest", request.jsonSerializeString()).apply();
 		else
 			PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthRequest", null).apply();
+	}
+
+	private static void updateAuthStateFromRefreshToken(Context context, TokenResponse response, AuthorizationException ex) {
+		AuthState authState = getAuthState(context);
+		if (authState != null) {
+			authState.update(response,ex);
+			PreferenceManager.getDefaultSharedPreferences(context).edit().putString("AuthState", authState.jsonSerializeString()).apply();
+		}
+	}
+
+	public static AuthState getAuthState(Context context) {
+		String authStateString = PreferenceManager.getDefaultSharedPreferences(context).getString("AuthState", null);
+		if (authStateString != null) {
+			try {
+				return AuthState.jsonDeserialize(authStateString);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
 	}
 }
 
