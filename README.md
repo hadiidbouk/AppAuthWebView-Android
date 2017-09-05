@@ -29,8 +29,7 @@ Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with webview 
         	xmlns:android="http://schemas.android.com/apk/res/android"
         	xmlns:tools="http://schemas.android.com/tools"
         	android:layout_width="match_parent"
-        	android:layout_height="match_parent"
-        	tools:context="rubix.twist.BrowserActivity">
+        	android:layout_height="match_parent">
         
         	<WebView
         		android:id="@+id/WebView"
