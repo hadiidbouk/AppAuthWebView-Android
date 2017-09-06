@@ -12,7 +12,23 @@ Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with webview 
 
 ```compile 'com.github.hadiidbouk:AppAuthWebView-Android:1.0'```
 
+**Also add this in your build.gradle (app)**
+
+```
+android {
+   ...
+    defaultConfig {
+       ....
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': ''
+        ]
+
+    }
+ }
+ ```
+ 
 **And in the project build.gradle**
+
 
 ```allprojects {
       repositories {
