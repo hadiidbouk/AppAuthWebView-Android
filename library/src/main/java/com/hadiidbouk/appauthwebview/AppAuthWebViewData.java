@@ -17,6 +17,7 @@ public class AppAuthWebViewData {
 	private String registrationEndpointUri;
 	private String responseType;
 	private String endSessionEndpointUri;
+	private boolean isNonceAdded;
 
 	public String getClientId() {
 		return clientId;
@@ -104,5 +105,13 @@ public class AppAuthWebViewData {
 
 	public void setEndSessionEndpointUri(String endSessionEndpointUri) {
 		this.endSessionEndpointUri = endSessionEndpointUri;
+	}
+
+	public boolean isNonceAdded() {
+		return isNonceAdded;
+	}
+
+	public void setNonceAdded(boolean nonceAdded) {
+		isNonceAdded = nonceAdded;
 	}
 }

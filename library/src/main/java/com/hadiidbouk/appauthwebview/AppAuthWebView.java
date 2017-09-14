@@ -34,6 +34,7 @@ import net.openid.appauth.internal.Logger;
 import org.json.JSONException;
 
 import java.util.Date;
+import java.util.UUID;
 
 public class AppAuthWebView {
 
@@ -147,7 +148,12 @@ public class AppAuthWebView {
 
 		Uri uri = mAuthRequest.toUri();
 
-		mWebView.loadUrl(uri.toString());
+		String nonce = "";
+
+		if (mAppAuthWebViewData.isNonceAdded()) {
+			nonce = "&nonce=" + UUID.randomUUID().toString();
+		}
+		mWebView.loadUrl(uri.toString() + nonce);
 	}
 
 	public static void peroformRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data) {
@@ -167,7 +173,7 @@ public class AppAuthWebView {
 					ex.printStackTrace();
 					return;
 				}
-				AppAuthWebView.updateAuthStateFromRefreshToken(context,response,ex);
+				AppAuthWebView.updateAuthStateFromRefreshToken(context, response, ex);
 			}
 		});
 	}
@@ -254,14 +260,12 @@ public class AppAuthWebView {
 									.build();
 
 								setAuthorizationRequest(authorizationRequest);
-							}
-							else {
+							} else {
 								mAppAuthWebViewListener.showConnectionErrorLayout();
 							}
 						}
 					});
-				}
-				else {
+				} else {
 					mAppAuthWebViewListener.showConnectionErrorLayout();
 				}
 			}
@@ -434,7 +438,7 @@ public class AppAuthWebView {
 	private static void updateAuthStateFromRefreshToken(Context context, TokenResponse response, AuthorizationException ex) {
 		AuthState authState = getAuthState(context);
 		if (authState != null) {
-			authState.update(response,ex);
+			authState.update(response, ex);
 			PreferenceManager.getDefaultSharedPreferences(context).edit().putString("AuthState", authState.jsonSerializeString()).apply();
 		}
 	}
