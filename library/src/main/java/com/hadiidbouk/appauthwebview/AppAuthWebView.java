@@ -156,7 +156,7 @@ public class AppAuthWebView {
 		mWebView.loadUrl(uri.toString() + nonce);
 	}
 
-	public static void peroformRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data) {
+	public static void performRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data) {
 
 		AppAuthConfiguration.Builder appAuthConfigBuilder = new AppAuthConfiguration.Builder();
 		appAuthConfigBuilder.setConnectionBuilder(AppAuthConnectionBuilderForTesting.INSTANCE);
