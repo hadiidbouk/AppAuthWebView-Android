@@ -440,6 +440,10 @@ public class AppAuthWebView {
 		if (authState != null) {
 			authState.update(response, ex);
 			PreferenceManager.getDefaultSharedPreferences(context).edit().putString("AuthState", authState.jsonSerializeString()).apply();
+			Intent intent = new Intent();
+			intent.setAction(BROADCAST_RECEIVER_ACTION);
+			intent.putExtra(ACCESS_TOKEN, authState.getAccessToken());
+			context.sendBroadcast(intent);
 		}
 	}
 
@@ -455,5 +459,8 @@ public class AppAuthWebView {
 		}
 		return null;
 	}
+
+	public static final String BROADCAST_RECEIVER_ACTION = "com.hadiidbouk.AppAuthWebView.AccessTokenAction";
+	public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
 }
 
