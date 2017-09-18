@@ -10,7 +10,7 @@ Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with webview 
 
 ### Add the library to your dependencies
 
-```compile 'com.github.hadiidbouk:AppAuthWebView-Android:1.0.0'```
+```compile 'com.github.hadiidbouk:AppAuthWebView-Android:1.0.2'```
 
 **Also add this in your build.gradle (app)**
 
@@ -176,15 +176,14 @@ If you want to get the access token from this service you can do the following :
 1. Create your class extends BroadcastReceiver ( example in Kotlin ) :
 
 ``` 
- override fun onReceive(p0: Context?, p1: Intent?) {
+     override fun onReceive(context: Context?, intent: Intent?) {
 
-        if(p1!!.action.equals(AppAuthWebView.BROADCAST_RECEIVER_ACTION)) {
-            val token: String = p1.getStringExtra(AppAuthWebView.ACCESS_TOKEN)
-            
-            //do what you want here 
-            MyApp.TOKEN = token
+        if(intent!!.action.equals(AppAuthWebView.BROADCAST_RECEIVER_ACTION)) {
+            val authState : String = intent.getStringExtra(AppAuthWebView.AUTH_STATE_JSON)
+            AppAuthWebView.updateAuthState(context,authState)
         }
     }
+
 
 ```
 
