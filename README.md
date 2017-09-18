@@ -168,3 +168,33 @@ To access the id token or the access token you can simply call the static method
 To Perform a refresh token request you can simply call the static method **AppAuthWebView.peroformRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data)** and if the request success the AuthState will be updated in the shared preferences.
 
 
+
+### If you are using a service in another process 
+
+If you want to get the access token from this service you can do the following :
+
+1. Create your class extends BroadcastReceiver ( example in Kotlin ) :
+
+``` 
+ override fun onReceive(p0: Context?, p1: Intent?) {
+
+        if(p1!!.action.equals(AppAuthWebView.BROADCAST_RECEIVER_ACTION)) {
+            val token: String = p1.getStringExtra(AppAuthWebView.ACCESS_TOKEN)
+            
+            //do what you want here 
+            MyApp.TOKEN = token
+        }
+    }
+
+```
+
+2. Register to the broadcast by adding this to your manifest :
+
+```
+		<receiver android:name=".MyBroadcastReceiver">
+			<intent-filter>
+				<action android:name="com.hadiidbouk.AppAuthWebView.AccessTokenAction"/>
+			</intent-filter>
+		</receiver>
+```
+
