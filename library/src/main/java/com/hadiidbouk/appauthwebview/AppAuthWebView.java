@@ -428,6 +428,10 @@ public class AppAuthWebView {
 		}
 	}
 
+	public void updateAuthState(String authStateJsonString) {
+		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthState", authStateJsonString).apply();
+	}
+
 	private void setAuthorizationRequest(AuthorizationRequest request) {
 		if (request != null)
 			PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthRequest", request.jsonSerializeString()).apply();
