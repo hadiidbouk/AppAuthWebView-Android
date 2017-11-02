@@ -40,7 +40,7 @@ android {
 
 1. Create your layouts
 
-```
+```xml
 <RelativeLayout
         	xmlns:android="http://schemas.android.com/apk/res/android"
         	xmlns:tools="http://schemas.android.com/tools"
@@ -93,7 +93,7 @@ android {
 
 2. Create your **AppAuthWebViewData** 
 
-```
+```java
   AppAuthWebViewData data = new AppAuthWebViewData();
         		data.setClientId(");
         		data.setAuthorizationEndpointUri("");
@@ -105,12 +105,13 @@ android {
         		data.setTokenEndpointUri("");
         		data.setRegistrationEndpointUri("");
         		data.setResponseType("");
+			data.setGenerateCodeVerifier(false);
 ```
 
 
 3. Implement **IAppAuthWebViewListener**
 
-```
+```java
  public class MainActivity extends Activity implements IAppAuthWebViewListener {
             	.....
         
@@ -140,7 +141,7 @@ android {
   
   4. Perform Login Request 
 
-```
+```java
      @Override
         	protected void onCreate(Bundle savedInstanceState) {
         		super.onCreate(savedInstanceState);
@@ -175,7 +176,7 @@ If you want to get the access token from this service you can do the following :
 
 1. Create your class extends BroadcastReceiver ( example in Kotlin ) :
 
-``` 
+``` java
      override fun onReceive(context: Context?, intent: Intent?) {
 
         if(intent!!.action.equals(AppAuthWebView.BROADCAST_RECEIVER_ACTION)) {
@@ -189,7 +190,7 @@ If you want to get the access token from this service you can do the following :
 
 2. Register to the broadcast by adding this to your manifest :
 
-```
+```xml
 		<receiver android:name=".MyBroadcastReceiver">
 			<intent-filter>
 				<action android:name="com.hadiidbouk.AppAuthWebView.AccessTokenAction"/>
