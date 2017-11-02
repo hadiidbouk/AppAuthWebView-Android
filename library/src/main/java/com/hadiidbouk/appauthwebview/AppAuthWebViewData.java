@@ -18,7 +18,7 @@ public class AppAuthWebViewData {
 	private String responseType;
 	private String endSessionEndpointUri;
 	private boolean isNonceAdded;
-	private boolean generateCodeVerifier = true;
+	private boolean generateCodeVerifier = false;
 
 	public String getClientId() {
 		return clientId;
