@@ -27,6 +27,7 @@ import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ClientSecretPost;
+import net.openid.appauth.CodeVerifierUtil;
 import net.openid.appauth.TokenRequest;
 import net.openid.appauth.TokenResponse;
 import net.openid.appauth.internal.Logger;
@@ -236,11 +237,18 @@ public class AppAuthWebView {
 				if (resp != null) {
 
 					ClientSecretPost clientSecretPost = new ClientSecretPost(mAppAuthWebViewData.getClientSecret());
-					TokenRequest tokenRequest = new TokenRequest
-						.Builder(mAuthConfig, mAppAuthWebViewData.getClientId())
+					TokenRequest.Builder tokenRequestBuilder = new TokenRequest
+						.Builder(mAuthConfig, mAppAuthWebViewData.getClientId());
+
+					tokenRequestBuilder
 						.setAuthorizationCode(resp.authorizationCode)
-						.setRedirectUri(Uri.parse(mAppAuthWebViewData.getRedirectLoginUri()))
-						.build();
+						.setRedirectUri(Uri.parse(mAppAuthWebViewData.getRedirectLoginUri()));
+
+					if (mAppAuthWebViewData.isGenerateCodeVerifier()) {
+						tokenRequestBuilder.setCodeVerifier(CodeVerifierUtil.generateRandomCodeVerifier());
+					}
+
+					TokenRequest tokenRequest = tokenRequestBuilder.build();
 
 					mAuthService.performTokenRequest(tokenRequest, clientSecretPost, new AuthorizationService.TokenResponseCallback() {
 						@Override public void onTokenRequestCompleted(@Nullable TokenResponse response, @Nullable AuthorizationException ex) {

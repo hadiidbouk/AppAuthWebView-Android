@@ -18,6 +18,7 @@ public class AppAuthWebViewData {
 	private String responseType;
 	private String endSessionEndpointUri;
 	private boolean isNonceAdded;
+	private boolean generateCodeVerifier = true;
 
 	public String getClientId() {
 		return clientId;
@@ -113,5 +114,13 @@ public class AppAuthWebViewData {
 
 	public void setNonceAdded(boolean nonceAdded) {
 		isNonceAdded = nonceAdded;
+	}
+
+	public boolean isGenerateCodeVerifier() {
+		return generateCodeVerifier;
+	}
+
+	public void setGenerateCodeVerifier(boolean generateCodeVerifier) {
+		this.generateCodeVerifier = generateCodeVerifier;
 	}
 }
