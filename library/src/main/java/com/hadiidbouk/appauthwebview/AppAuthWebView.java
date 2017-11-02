@@ -246,6 +246,8 @@ public class AppAuthWebView {
 
 					if (mAppAuthWebViewData.isGenerateCodeVerifier()) {
 						tokenRequestBuilder.setCodeVerifier(CodeVerifierUtil.generateRandomCodeVerifier());
+					} else {
+						tokenRequestBuilder.setCodeVerifier(null);
 					}
 
 					TokenRequest tokenRequest = tokenRequestBuilder.build();
