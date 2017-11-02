@@ -47,6 +47,7 @@ public class AppAuthWebView {
 	private boolean isRedirect, isErrorReceived, isLoadingLayoutVisible;
 	private ConnectionTimeoutHandler timeoutHandler = null;
 	private static int PAGE_LOAD_PROGRESS = 0;
+	private String mCodeVerifier;
 
 	// From AppAuth Library
 	private AuthorizationServiceConfiguration mAuthConfig;
@@ -128,10 +129,12 @@ public class AppAuthWebView {
 			.setScope(mAppAuthWebViewData.getScope());
 
 		if (mAppAuthWebViewData.isGenerateCodeVerifier()) {
-			authRequestBuilder.setCodeVerifier(CodeVerifierUtil.generateRandomCodeVerifier());
+			mCodeVerifier = CodeVerifierUtil.generateRandomCodeVerifier();
 		} else {
-			authRequestBuilder.setCodeVerifier(null);
+			mCodeVerifier = null;
 		}
+		authRequestBuilder.setCodeVerifier(mCodeVerifier);
+
 		mAuthRequest = authRequestBuilder.build();
 
 		mWebView.setWebViewClient(new AppAuthWebViewClient());
@@ -248,13 +251,9 @@ public class AppAuthWebView {
 
 					tokenRequestBuilder
 						.setAuthorizationCode(resp.authorizationCode)
-						.setRedirectUri(Uri.parse(mAppAuthWebViewData.getRedirectLoginUri()));
+						.setRedirectUri(Uri.parse(mAppAuthWebViewData.getRedirectLoginUri()))
+						.setCodeVerifier(mCodeVerifier);
 
-					if (mAppAuthWebViewData.isGenerateCodeVerifier()) {
-						tokenRequestBuilder.setCodeVerifier(CodeVerifierUtil.generateRandomCodeVerifier());
-					} else {
-						tokenRequestBuilder.setCodeVerifier(null);
-					}
 
 					TokenRequest tokenRequest = tokenRequestBuilder.build();
 
