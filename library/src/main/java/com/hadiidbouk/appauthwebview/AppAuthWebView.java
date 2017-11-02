@@ -118,15 +118,21 @@ public class AppAuthWebView {
 
 		mAuthService = new AuthorizationService(mContext, appAuthConfig);
 
-		mAuthRequest = new AuthorizationRequest
+		AuthorizationRequest.Builder authRequestBuilder = new AuthorizationRequest
 			.Builder(
 			mAuthConfig,
 			mAppAuthWebViewData.getClientId(),
 			mAppAuthWebViewData.getResponseType(),
 			Uri.parse(mAppAuthWebViewData.getRedirectLoginUri())
 		)
-			.setScope(mAppAuthWebViewData.getScope())
-			.build();
+			.setScope(mAppAuthWebViewData.getScope());
+
+		if (mAppAuthWebViewData.isGenerateCodeVerifier()) {
+			authRequestBuilder.setCodeVerifier(CodeVerifierUtil.generateRandomCodeVerifier());
+		} else {
+			authRequestBuilder.setCodeVerifier(null);
+		}
+		mAuthRequest = authRequestBuilder.build();
 
 		mWebView.setWebViewClient(new AppAuthWebViewClient());
 		mWebView.getSettings().setJavaScriptEnabled(true);
