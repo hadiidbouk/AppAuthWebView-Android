@@ -10,7 +10,7 @@ Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with webview 
 
 ### Add the library to your dependencies
 
-```compile 'com.github.hadiidbouk:AppAuthWebView-Android:1.1.1'```
+```compile 'com.github.hadiidbouk:AppAuthWebView-Android:1.1.2'```
 
 **Also add this in your build.gradle (app)**
 
