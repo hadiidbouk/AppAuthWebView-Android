@@ -160,6 +160,19 @@ android {
     	}
 ```
 
+5. Perform Logout Request (Optional)
+
+```java
+AppAuthWebView appAuthWebView = new AppAuthWebView
+    			.Builder()
+    			.webView(webView)
+    			.authData(data)
+    			.listener(this)
+    			.build();
+    
+    		appAuthWebView.performLogoutRequest();
+```
+When Logout finish it will call the listener `onLogoutFinish()` from `AppAuthWebViewListener`
 
 ### Working with tokens and refresh token
 
