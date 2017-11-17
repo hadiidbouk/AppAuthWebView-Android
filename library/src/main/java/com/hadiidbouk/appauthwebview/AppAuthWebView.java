@@ -448,7 +448,7 @@ public class AppAuthWebView {
 
 			if (PAGE_LOAD_PROGRESS == 100) {
 				if (!isRedirect) {
-					if (!isLogout && !view.getUrl().toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri()))
+					if (!isLogout && !view.getUrl().toLowerCase().contains("logout"))
 						mAppAuthWebViewListener.hideLoadingLayout();
 					isLoadingLayoutVisible = false;
 				}
