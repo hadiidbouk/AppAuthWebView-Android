@@ -246,7 +246,9 @@ public class AppAuthWebView {
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
 			if (url.toLowerCase().equals(mAppAuthWebViewData.getRedirectLogoutUri().toLowerCase())) {
+				isLogout = true;
 				mAppAuthWebViewListener.onLogoutFinish();
+				return false;
 			} else if (url.toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri())) {
 				isLogout = true;
 				return false;
