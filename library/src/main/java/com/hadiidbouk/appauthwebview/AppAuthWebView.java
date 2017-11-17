@@ -308,7 +308,7 @@ public class AppAuthWebView {
 					mAppAuthWebViewListener.showConnectionErrorLayout();
 				}
 			}
-			isLogout = true;
+			isLogout = false;
 			return false;
 		}
 
