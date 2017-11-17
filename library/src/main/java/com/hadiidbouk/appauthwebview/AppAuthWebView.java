@@ -248,8 +248,8 @@ public class AppAuthWebView {
 			if (url.toLowerCase().equals(mAppAuthWebViewData.getRedirectLogoutUri().toLowerCase())) {
 				isLogout = true;
 				mAppAuthWebViewListener.onLogoutFinish();
-				return false;
-			} else if (url.toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri())) {
+				return true;
+			} else if (url.toLowerCase().contains("logout")) {
 				isLogout = true;
 				return false;
 			} else if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLoginUri().toLowerCase())) {
