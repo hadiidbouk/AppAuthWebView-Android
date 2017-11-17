@@ -243,7 +243,10 @@ public class AppAuthWebView {
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-			if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLoginUri().toLowerCase())) {
+			if (url.toLowerCase().equals(mAppAuthWebViewData.getRedirectLogoutUri().toLowerCase())) {
+				mAppAuthWebViewListener.onLogoutFinish();
+			}
+			else if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLoginUri().toLowerCase())) {
 
 				mAppAuthWebViewListener.hideConnectionErrorLayout();
 				mAppAuthWebViewListener.showLoadingLayout();
@@ -300,9 +303,6 @@ public class AppAuthWebView {
 				} else {
 					mAppAuthWebViewListener.showConnectionErrorLayout();
 				}
-			}
-			else if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLogoutUri().toLowerCase())) {
-				mAppAuthWebViewListener.onLogoutFinish();
 			}
 			return false;
 		}
