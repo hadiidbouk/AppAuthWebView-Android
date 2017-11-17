@@ -150,7 +150,7 @@ public class AppAuthWebView {
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.setWebChromeClient(new ChromeClient());
 
-		if (!isLoadingLayoutVisible)
+		if (!isLoadingLayoutVisible && !isLogout)
 			mWebView.loadUrl("about:blank");
 
 		mAppAuthWebViewListener.hideConnectionErrorLayout();
