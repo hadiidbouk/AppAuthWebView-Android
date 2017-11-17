@@ -48,6 +48,7 @@ public class AppAuthWebView {
 	private ConnectionTimeoutHandler timeoutHandler = null;
 	private static int PAGE_LOAD_PROGRESS = 0;
 	private String mCodeVerifier;
+	private boolean isLogout = false;
 
 	// From AppAuth Library
 	private AuthorizationServiceConfiguration mAuthConfig;
@@ -168,21 +169,22 @@ public class AppAuthWebView {
 
 	public void performLogoutRequest() {
 		AuthState authState = getAuthState(mContext);
-		if(authState == null)
+		if (authState == null)
 			return;
 		String idToken = authState.getIdToken();
-		if(idToken != null) {
+		if (idToken != null) {
 			Uri uri = Uri.parse(
 				mAppAuthWebViewData.getEndSessionEndpointUri()
-				+ "?id_token_hint="
-				+ authState.getIdToken()
-				+ "&post_logout_redirect_uri="
-				+ mAppAuthWebViewData.getRedirectLogoutUri()
+					+ "?id_token_hint="
+					+ authState.getIdToken()
+					+ "&post_logout_redirect_uri="
+					+ mAppAuthWebViewData.getRedirectLogoutUri()
 			);
 
 			mWebView.loadUrl(uri.toString());
 		}
 	}
+
 	public static void performRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data) {
 
 		AppAuthConfiguration.Builder appAuthConfigBuilder = new AppAuthConfiguration.Builder();
@@ -245,11 +247,10 @@ public class AppAuthWebView {
 
 			if (url.toLowerCase().equals(mAppAuthWebViewData.getRedirectLogoutUri().toLowerCase())) {
 				mAppAuthWebViewListener.onLogoutFinish();
-			}
-			else if(url.toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri())) {
-				mAppAuthWebViewListener.showLoadingLayout();
-			}
-			else if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLoginUri().toLowerCase())) {
+			} else if (url.toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri())) {
+				isLogout = true;
+				return false;
+			} else if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLoginUri().toLowerCase())) {
 
 				mAppAuthWebViewListener.hideConnectionErrorLayout();
 				mAppAuthWebViewListener.showLoadingLayout();
@@ -307,15 +308,13 @@ public class AppAuthWebView {
 					mAppAuthWebViewListener.showConnectionErrorLayout();
 				}
 			}
+			isLogout = true;
 			return false;
 		}
 
 		@Override public void onPageFinished(WebView view, String url) {
 			super.onPageFinished(view, url);
-
-			if(url.toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri())) {
-				mAppAuthWebViewListener.showLoadingLayout();
-			}
+			
 
 			if (timeoutHandler != null)
 				timeoutHandler.cancel(true);
@@ -407,7 +406,9 @@ public class AppAuthWebView {
 					mAppAuthWebViewListener.showLoadingLayout();
 					isLoadingLayoutVisible = true;
 				} else {
-					mAppAuthWebViewListener.hideLoadingLayout();
+
+					if (!isLogout)
+						mAppAuthWebViewListener.hideLoadingLayout();
 
 					isLoadingLayoutVisible = false;
 
@@ -446,7 +447,8 @@ public class AppAuthWebView {
 
 			if (PAGE_LOAD_PROGRESS == 100) {
 				if (!isRedirect) {
-					mAppAuthWebViewListener.hideLoadingLayout();
+					if (!isLogout)
+						mAppAuthWebViewListener.hideLoadingLayout();
 					isLoadingLayoutVisible = false;
 				}
 			} else {
