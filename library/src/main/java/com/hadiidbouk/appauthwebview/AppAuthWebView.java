@@ -166,6 +166,23 @@ public class AppAuthWebView {
 		mWebView.loadUrl(uri.toString() + nonce);
 	}
 
+	public void performLogoutRequest() {
+		AuthState authState = getAuthState(mContext);
+		if(authState == null)
+			return;
+		String idToken = authState.getIdToken();
+		if(idToken != null) {
+			Uri uri = Uri.parse(
+				mAppAuthWebViewData.getEndSessionEndpointUri()
+				+ "?id_token_hint="
+				+ authState.getIdToken()
+				+ "&post_logout_redirect_uri="
+				+ mAppAuthWebViewData.getRedirectLogoutUri()
+			);
+
+			mWebView.loadUrl(uri.toString());
+		}
+	}
 	public static void performRefreshTokenRequest(final Context context, AuthState authState, AppAuthWebViewData data) {
 
 		AppAuthConfiguration.Builder appAuthConfigBuilder = new AppAuthConfiguration.Builder();
@@ -283,6 +300,9 @@ public class AppAuthWebView {
 				} else {
 					mAppAuthWebViewListener.showConnectionErrorLayout();
 				}
+			}
+			else if (url.toLowerCase().startsWith(mAppAuthWebViewData.getRedirectLogoutUri().toLowerCase())) {
+				mAppAuthWebViewListener.onLogoutFinish();
 			}
 			return false;
 		}

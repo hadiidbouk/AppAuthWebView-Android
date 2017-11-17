@@ -15,4 +15,5 @@ public interface IAppAuthWebViewListener {
 
 	void hideLoadingLayout();
 
+	void onLogoutFinish();
 }
