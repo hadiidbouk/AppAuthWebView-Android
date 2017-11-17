@@ -409,7 +409,6 @@ public class AppAuthWebView {
 					isLoadingLayoutVisible = true;
 				} else {
 
-					if (!isLogout)
 						mAppAuthWebViewListener.hideLoadingLayout();
 
 					isLoadingLayoutVisible = false;
@@ -449,7 +448,7 @@ public class AppAuthWebView {
 
 			if (PAGE_LOAD_PROGRESS == 100) {
 				if (!isRedirect) {
-					if (!isLogout)
+					if (!isLogout && !view.getUrl().toLowerCase().contains(mAppAuthWebViewData.getEndSessionEndpointUri()))
 						mAppAuthWebViewListener.hideLoadingLayout();
 					isLoadingLayoutVisible = false;
 				}
