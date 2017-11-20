@@ -48,7 +48,7 @@ public class AppAuthWebView {
 	private ConnectionTimeoutHandler timeoutHandler = null;
 	private static int PAGE_LOAD_PROGRESS = 0;
 	private String mCodeVerifier;
-	private static boolean isLogout = false;
+	private boolean isLogout = false;
 
 	// From AppAuth Library
 	private AuthorizationServiceConfiguration mAuthConfig;
@@ -316,7 +316,7 @@ public class AppAuthWebView {
 
 		@Override public void onPageFinished(WebView view, String url) {
 			super.onPageFinished(view, url);
-			
+
 
 			if (timeoutHandler != null)
 				timeoutHandler.cancel(true);
@@ -404,12 +404,12 @@ public class AppAuthWebView {
 
 			} else {
 
-				if (isRedirect) {
+				if (isRedirect || isLogout) {
 					mAppAuthWebViewListener.showLoadingLayout();
 					isLoadingLayoutVisible = true;
 				} else {
 
-						mAppAuthWebViewListener.hideLoadingLayout();
+					mAppAuthWebViewListener.hideLoadingLayout();
 
 					isLoadingLayoutVisible = false;
 
@@ -447,9 +447,8 @@ public class AppAuthWebView {
 			PAGE_LOAD_PROGRESS = newProgress;
 
 			if (PAGE_LOAD_PROGRESS == 100) {
-				if (!isRedirect) {
-					if (!isLogout)
-						mAppAuthWebViewListener.hideLoadingLayout();
+				if (!isRedirect && !isLogout) {
+					mAppAuthWebViewListener.hideLoadingLayout();
 					isLoadingLayoutVisible = false;
 				}
 			} else {
