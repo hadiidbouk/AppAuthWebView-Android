@@ -317,7 +317,9 @@ public class AppAuthWebView {
 		@Override public void onPageFinished(WebView view, String url) {
 			super.onPageFinished(view, url);
 
-
+			if(isLogout) {
+				view.setVisibility(View.INVISIBLE);
+			}
 			if (timeoutHandler != null)
 				timeoutHandler.cancel(true);
 
