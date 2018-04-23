@@ -115,12 +115,12 @@ android {
  public class MainActivity extends Activity implements IAppAuthWebViewListener {
             	.....
         
-        @Override public void onUserAuthorize(AuthState authState) {
+                @Override public void onUserAuthorize(AuthState authState) {
         		Toast.makeText(this, "Token : " + authState.getIdToken(), Toast.LENGTH_SHORT).show();
         		finish();		
         	}
         
-        @Override public void showConnectionErrorLayout() {
+                @Override public void showConnectionErrorLayout() {
             		mErrorLayout.setVisibility(View.VISIBLE);
             	}
             
