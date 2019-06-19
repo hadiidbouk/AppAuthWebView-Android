@@ -1,6 +1,6 @@
 # AppAuthWebView Android
 
-Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with webview .
+Using [AppAuth-Android](https://github.com/openid/AppAuth-Android) with a webview .
 
 ![](https://i.imgur.com/iTmRs0p.png)
 
