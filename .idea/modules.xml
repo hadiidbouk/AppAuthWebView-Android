@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/AppAuthWebView.iml" filepath="$PROJECT_DIR$/AppAuthWebView.iml" />
       <module fileurl="file://$PROJECT_DIR$/AppAuthWebView-Android.iml" filepath="$PROJECT_DIR$/AppAuthWebView-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
     </modules>
   </component>

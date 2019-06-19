@@ -10,6 +10,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'hadiidbouk-appAuthWebView'
+        ]
     }
     buildTypes {
         release {
@@ -26,6 +29,7 @@ dependencies {
     })
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.github.hadiidbouk:AppAuthWebView-Android:1.2.7'
 
     testImplementation 'junit:junit:4.12'
 }

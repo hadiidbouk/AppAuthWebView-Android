@@ -1,4 +1,4 @@
-package com.hadiidbouk.appauthwebview;
+package com.hadiidbouk.sample;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
