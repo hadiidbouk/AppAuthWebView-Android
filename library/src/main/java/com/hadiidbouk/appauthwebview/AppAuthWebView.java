@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -26,6 +27,8 @@ import net.openid.appauth.AuthorizationRequest;
 import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.AuthorizationServiceConfiguration;
+import net.openid.appauth.ClientAuthentication;
+import net.openid.appauth.ClientSecretBasic;
 import net.openid.appauth.ClientSecretPost;
 import net.openid.appauth.CodeVerifierUtil;
 import net.openid.appauth.TokenRequest;
@@ -49,6 +52,8 @@ public class AppAuthWebView {
 	private static int PAGE_LOAD_PROGRESS = 0;
 	private String mCodeVerifier;
 	private boolean isLogout = false;
+	private static String mSharedPrefenceName = null;
+	private static boolean mUseClientSecretBasic = false;
 
 	// From AppAuth Library
 	private AuthorizationServiceConfiguration mAuthConfig;
@@ -62,6 +67,8 @@ public class AppAuthWebView {
 		private AppAuthWebViewData mAppAuthWebViewData;
 		private Context mContext;
 		private long mConnectionTimeOut;
+		private String mCustomSharedPreferenceName = null;
+		private boolean mUseClientSecretBasic = false;
 
 		public Builder listener(IAppAuthWebViewListener authWebViewListener) {
 			mAuthWebViewListener = authWebViewListener;
@@ -84,13 +91,25 @@ public class AppAuthWebView {
 			return this;
 		}
 
+		public Builder setSharedPreferenceName(String sharedPrefenceName) {
+			mCustomSharedPreferenceName = sharedPrefenceName;
+			return this;
+		}
+
+		public Builder setUseClientSecretBasic(boolean value) {
+			mUseClientSecretBasic = value;
+			return this;
+		}
+
 		public AppAuthWebView build() {
 			return new AppAuthWebView(
 				mContext,
 				mAuthWebViewListener,
 				mWebView,
 				mAppAuthWebViewData,
-				mConnectionTimeOut
+				mConnectionTimeOut,
+				mCustomSharedPreferenceName,
+				mUseClientSecretBasic
 			);
 		}
 	}
@@ -100,12 +119,16 @@ public class AppAuthWebView {
 						   IAppAuthWebViewListener appAuthWebViewListener,
 						   WebView webView,
 						   AppAuthWebViewData appAuthWebViewData,
-						   long connectionTimeOut
+						   long connectionTimeOut,
+						   String customSharedPreferenceName,
+						   boolean useClientSecretBasic
 	) {
 		this.mAppAuthWebViewListener = appAuthWebViewListener;
 		this.mWebView = webView;
 		this.mAppAuthWebViewData = appAuthWebViewData;
 		this.mConnectionTimeOut = connectionTimeOut == 0L ? 30000L : connectionTimeOut;
+		this.mSharedPrefenceName = customSharedPreferenceName;
+		this.mUseClientSecretBasic = useClientSecretBasic;
 		mContext = context;
 
 		mAuthConfig = new AuthorizationServiceConfiguration(
@@ -168,7 +191,12 @@ public class AppAuthWebView {
 	}
 
 	public void performLogoutRequest() {
-		AuthState authState = getAuthState(mContext);
+		AuthState authState;
+		if(isSetSharedPreferenceName()){
+			authState = getAuthState(mContext, mSharedPrefenceName);
+		} else {
+			authState = getAuthState(mContext);
+		}
 		if (authState == null)
 			return;
 		String idToken = authState.getIdToken();
@@ -193,10 +221,9 @@ public class AppAuthWebView {
 
 		AuthorizationService authService = new AuthorizationService(context, appAuthConfig);
 
-		ClientSecretPost clientSecretPost = new ClientSecretPost(data.getClientSecret());
 		final TokenRequest request = authState.createTokenRefreshRequest();
 
-		authService.performTokenRequest(request, clientSecretPost, new AuthorizationService.TokenResponseCallback() {
+		authService.performTokenRequest(request, getClientAuthentication(data.getClientSecret()), new AuthorizationService.TokenResponseCallback() {
 			@Override public void onTokenRequestCompleted(@Nullable TokenResponse response, @Nullable AuthorizationException ex) {
 				if (ex != null) {
 					ex.printStackTrace();
@@ -271,7 +298,6 @@ public class AppAuthWebView {
 
 				if (resp != null) {
 
-					ClientSecretPost clientSecretPost = new ClientSecretPost(mAppAuthWebViewData.getClientSecret());
 					TokenRequest.Builder tokenRequestBuilder = new TokenRequest
 						.Builder(mAuthConfig, mAppAuthWebViewData.getClientId());
 
@@ -283,7 +309,7 @@ public class AppAuthWebView {
 
 					TokenRequest tokenRequest = tokenRequestBuilder.build();
 
-					mAuthService.performTokenRequest(tokenRequest, clientSecretPost, new AuthorizationService.TokenResponseCallback() {
+					mAuthService.performTokenRequest(tokenRequest, getClientAuthentication(mAppAuthWebViewData.getClientSecret()), new AuthorizationService.TokenResponseCallback() {
 						@Override public void onTokenRequestCompleted(@Nullable TokenResponse response, @Nullable AuthorizationException ex) {
 
 							if (ex == null) {
@@ -465,33 +491,34 @@ public class AppAuthWebView {
 		if (mAuthState == null)
 			mAuthState = new AuthState(response, ex);
 
-		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthState", mAuthState.jsonSerializeString()).apply();
+//		PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthState", mAuthState.jsonSerializeString()).apply();
+		getSharedPreferences(mContext).edit().putString("AuthState", mAuthState.jsonSerializeString()).apply();
 
 	}
 
 	private void updateAuthState(TokenResponse response, AuthorizationException ex) {
 		if (mAuthState != null) {
 			mAuthState.update(response, ex);
-			PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthState", mAuthState.jsonSerializeString()).apply();
+			getSharedPreferences(mContext).edit().putString("AuthState", mAuthState.jsonSerializeString()).apply();
 		}
 	}
 
 	public static void updateAuthState(Context context, String authStateJsonString) {
-		PreferenceManager.getDefaultSharedPreferences(context).edit().putString("AuthState", authStateJsonString).apply();
+		getSharedPreferences(context).edit().putString("AuthState", authStateJsonString).apply();
 	}
 
 	private void setAuthorizationRequest(AuthorizationRequest request) {
 		if (request != null)
-			PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthRequest", request.jsonSerializeString()).apply();
+			getSharedPreferences(mContext).edit().putString("AuthRequest", request.jsonSerializeString()).apply();
 		else
-			PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("AuthRequest", null).apply();
+			getSharedPreferences(mContext).edit().putString("AuthRequest", null).apply();
 	}
 
 	private static void updateAuthStateFromRefreshToken(Context context, TokenResponse response, AuthorizationException ex) {
 		AuthState authState = getAuthState(context);
 		if (authState != null) {
 			authState.update(response, ex);
-			PreferenceManager.getDefaultSharedPreferences(context).edit().putString("AuthState", authState.jsonSerializeString()).apply();
+			getSharedPreferences(context).edit().putString("AuthState", authState.jsonSerializeString()).apply();
 			Intent intent = new Intent();
 			intent.setAction(BROADCAST_RECEIVER_ACTION);
 			intent.putExtra(AUTH_STATE_JSON, authState.jsonSerializeString());
@@ -510,6 +537,41 @@ public class AppAuthWebView {
 			}
 		}
 		return null;
+	}
+
+	public static AuthState getAuthState(Context context, String customSharedPreferenceName) {
+		if(customSharedPreferenceName != null && !customSharedPreferenceName.isEmpty()){
+			String authStateString = context.getSharedPreferences(customSharedPreferenceName, Context.MODE_PRIVATE).getString("AuthState", null);
+			if (authStateString != null) {
+				try {
+					return AuthState.jsonDeserialize(authStateString);
+				} catch (JSONException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static SharedPreferences getSharedPreferences(Context context){
+		if(isSetSharedPreferenceName()){
+			return context.getSharedPreferences(mSharedPrefenceName, Context.MODE_PRIVATE);
+		} else {
+			return  PreferenceManager.getDefaultSharedPreferences(context);
+		}
+	}
+
+	private static boolean isSetSharedPreferenceName(){
+		return mSharedPrefenceName!= null && !mSharedPrefenceName.isEmpty();
+	}
+
+	private static ClientAuthentication getClientAuthentication(String clientSecret){
+		if(mUseClientSecretBasic){
+			return new ClientSecretBasic(clientSecret);
+		} else {
+			return new ClientSecretPost(clientSecret);
+		}
 	}
 
 	public static final String BROADCAST_RECEIVER_ACTION = "com.hadiidbouk.AppAuthWebView.AccessTokenAction";
